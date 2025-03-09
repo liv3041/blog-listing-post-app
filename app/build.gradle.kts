@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.virdapp.listingpost"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.virdapp.listingpost"

@@ -32,6 +32,21 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+private val DarkColorPalette = darkColorScheme(
+    primary = ThemeColors.Night.primary,
+    onPrimary = ThemeColors.Night.text,
+    surface = ThemeColors.Night.surface,
+    background = ThemeColors.Night.background
+)
+
+private val LightColorPalette = lightColorScheme(
+    primary = ThemeColors.Day.primary,
+    onPrimary = ThemeColors.Day.text,
+    surface = ThemeColors.Day.surface,
+    background = ThemeColors.Day.background
+)
+
+
 
 @Composable
 fun ListingpostTheme(
@@ -49,10 +64,16 @@ fun ListingpostTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val colors = if (darkTheme) {
+        DarkColorPalette
+    } else {
+        LightColorPalette
+    }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = colors,
         typography = Typography,
         content = content
     )
+
 }
