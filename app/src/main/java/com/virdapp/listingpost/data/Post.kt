@@ -12,29 +12,34 @@ data class Post(
     val author:String,
    @DrawableRes val logo_of_author:Int,
     val likes_no: Int,
-    val comments:Int
+    val comments:Int,
+    val blogPost: BlogPost,
+    val rendered: Rendered
 )
 
-val news_post = listOf(
-    Post(
-        "First Post",
-        "This first post is generated to test the dummy application .",
-        R.drawable.image1,
-        200,
-        "Woof App",
-        R.drawable.ic_woof_logo,
-        99,
-        100
-    ),
-    Post(
-            "Second Post",
-    "This second post is generated to test the dummy application which the listing page app assignment given by vird company.",
-    R.drawable.image1,
-    1000,
-    "Woof App",
-    R.drawable.ic_woof_logo,
-    990,
-    900
-)
-)
+
+//
+//val news_post = listOf(
+//    Post(
+//        "First Post",
+//        "This first post is generated to test the dummy application .",
+//        R.drawable.image1,
+//        200,
+//        "Woof App",
+//        R.drawable.ic_woof_logo,
+//        99,
+//        10,
+//
+//    ),
+//    Post(
+//            "Second Post",
+//    "This second post is generated to test the dummy application which the listing page app assignment given by vird company.",
+//    R.drawable.image1,
+//    1000,
+//    "Woof App",
+//    R.drawable.ic_woof_logo,
+//    990,
+//    900
+//)
+//)
 
