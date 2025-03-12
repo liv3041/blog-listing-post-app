@@ -141,7 +141,8 @@ fun PostItem(
     Card(modifier = modifier
         .clickable {
             val encodedUrl = Uri.encode(post.blogPost.link)
-            navController.navigate("webview/${encodedUrl}")
+            val encodedTitle = Uri.encode(post.title)
+            navController.navigate("webview/${encodedUrl}/${encodedTitle}")
         },
         shape = MaterialTheme.shapes.large,
         ) {
@@ -309,53 +310,11 @@ fun NavGraph(startDestination: String = "home") {
         composable("home") {
             BlogListingApp(navController)
         }
-        composable("webview/{url}") { backStackEntry ->
+        composable("webview/{url}/{title}") { backStackEntry ->
             val url = backStackEntry.arguments?.getString("url") ?: ""
+            val title = backStackEntry.arguments?.getString("title")?.let { Uri.decode(it) } ?: "Web Page"
 
-            WebViewScreen(url, navController)
+            WebViewScreen(url, title, navController)
         }
     }
 }
-
-
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-private fun WebViewScreen(url: String, navController: NavController) {
-    var isLoading by remember { mutableStateOf(true) }
-    val webViewNavigator = rememberWebViewNavigator()
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { context ->
-                WebView(context).apply {
-                    settings.javaScriptEnabled = true
-                    webChromeClient = WebChromeClient()
-                    webViewClient = object : WebViewClient() {
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            isLoading = false
-                        }
-
-                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                            super.onPageStarted(view, url, favicon)
-                            isLoading = true
-                        }
-                    }
-                    loadUrl(url)
-                }
-            }
-        )
-
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-    }
-    // Handle Back Gesture
-    BackHandler(enabled = webViewNavigator.canGoBack) {
-        webViewNavigator.navigateBack()
-    }
-
-}
-
-
