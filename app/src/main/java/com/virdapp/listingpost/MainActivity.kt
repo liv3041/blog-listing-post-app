@@ -9,6 +9,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.google.accompanist.web.rememberWebViewNavigator
+import com.google.accompanist.web.rememberWebViewState
 
 
 import com.virdapp.listingpost.ui.theme.ListingpostTheme
@@ -272,6 +276,9 @@ fun NavGraph(startDestination: String = "home") {
 @Composable
 private fun WebViewScreen(url: String, navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
+    val webViewState = rememberWebViewState(url)
+    val webViewNavigator = rememberWebViewNavigator()
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -289,12 +296,18 @@ private fun WebViewScreen(url: String, navController: NavController) {
                     loadUrl(url)
                 }
             }
+
         )
 
-        if (isLoading) {
-            CircularProgressIndicator()
+        if (webViewState.isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
+    // Handle Back Gesture
+    BackHandler(enabled = webViewNavigator.canGoBack) {
+        webViewNavigator.navigateBack()
+    }
+
 }
 
 

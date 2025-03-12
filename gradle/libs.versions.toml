@@ -1,4 +1,5 @@
 [versions]
+accompanistWebview = "0.31.1-alpha"
 agp = "8.7.0"
 androidxRuntimeLivedata = "1.5.0"
 coilCompose = "2.6.0"
@@ -22,6 +23,7 @@ runtimeLivedata = "1.6.6"
 runtimeLivedataVersion = "1.6.0"
 
 [libraries]
+accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanistWebview" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-compose-v262 = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
