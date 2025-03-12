@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,16 +25,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,17 +80,29 @@ class MainActivity : ComponentActivity() {
 fun BlogListingApp(navController: NavController){
 
     val viewModel: PostViewModel = viewModel()
-    val data by viewModel.data
+    val posts by viewModel.posts
     val isLoading by viewModel.isLoading
-    val errorMessage by viewModel.errorMessage
-    
+    val errorMessage: String? by viewModel.errorMessage
+
+    val listState = rememberLazyListState()
+
+    // Detect when user scrolls to the bottom
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastIndex ->
+                if (lastIndex != null && lastIndex >= posts.size - 3) { // Load more when 3 items from the end
+                    Log.e("post-data", "BlogListingApp: ${lastIndex}  ${viewModel.currentPage}")
+                    viewModel.getPosts()
+                }
+            }
+    }
 
     Scaffold(
 
     ) { it ->
-        LazyColumn(contentPadding = it) {
+        LazyColumn(state = listState, contentPadding = it) {
             print(it)
-            items(data){
+            items(posts){
                 PostItem(
                     post = it,
                     modifier = Modifier.padding(16.dp),
@@ -235,14 +251,6 @@ fun cleanText(description: String): String {
     return  cleanDescription
 
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun BlogListingAppPreview() {
-//    ListingpostTheme {
-//    BlogListingApp(navController = NavController(this))
-//    }
-//}
 
 @Composable
 fun NavGraph(startDestination: String = "home") {

@@ -15,87 +15,76 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class PostViewModel:ViewModel() {
+class PostViewModel : ViewModel() {
 
+    // Holds the list of fetched posts
     var data = mutableStateOf<List<Post>>(emptyList())
-    var isLoading = mutableStateOf(false)
-    var errorMessage = mutableStateOf<String?>(null)
 
-    private var page = 1
-    private val pageSize = 10  // Load 10 posts per page
-    private var allDataLoaded = false
+    private val _posts = mutableStateOf<List<Post>>(emptyList())
+    val posts = _posts
 
+    // Loading state
+    private val _isLoading = mutableStateOf(false)
+    val isLoading = _isLoading
+
+    // Error state (Changed to MutableState<String?>)
+    private val _errorMessage = mutableStateOf<String?>(null)
+    val errorMessage = _errorMessage
+
+    // Pagination variables
+    var currentPage = 1
+    private val pageSize = 10
+    private var isLastPage = false
 
     init {
-        Log.d("api-result","init called")
         getPosts()
-//        loadPosts()
-    }
-
-
-    private val _posts = MutableLiveData<List<Post>>()
-    val posts: LiveData<List<Post>> get() = _posts
-
-    fun loadPosts() {
-        if (isLoading.value || allDataLoaded) return
-
-        isLoading.value = true
-
-        viewModelScope.launch {
-            delay(1000)  // Simulating network delay
-
-            val newPosts = fetchPosts(
-                page, pageSize,
-                blogPost = TODO()
-            )
-            if (newPosts.isEmpty()) {
-                allDataLoaded = true
-            } else {
-                data.value = data.value + newPosts
-                page++
-            }
-
-            isLoading.value = false
-        }
-    }
-    private fun fetchPosts(page: Int, pageSize: Int, blogPost: BlogPost): List<Post> {
-        // Replace this with your API fetching logic
-        return List(pageSize) { index ->
-            Post(
-                title = blogPost.title.rendered,  // Extracting rendered title
-                description = blogPost.excerpt.rendered,  // Extracting rendered excerpt
-                image = R.drawable.image1,
-                views = 0,  // Default or fetched value
-                author = "Unknown Author",  // Replace with actual author info
-                logo_of_author = R.drawable.ic_woof_logo,
-                likes_no = 0,  // Default likes count
-                comments = 0,  // Default comments count
-                blogPost = blogPost,  // Direct reference
-                rendered = Rendered(blogPost.title.rendered))
-        }
     }
 
     fun getPosts() {
+        if (_isLoading.value || isLastPage) return // Prevent duplicate requests
 
         viewModelScope.launch {
-            try {
-                val postList = BlogApi.instance.getPosts()
-                Log.d("api-result",postList.toString())
-                val newPostList = postList.map { blogPost ->
-                    mapBlogPostToPost(blogPost)
-                }
-
-                _posts.value = newPostList
-                println()
-                Log.d("api-result",newPostList.toString())
-                data.value = newPostList
-                errorMessage.value = null
-            } catch (e: Exception) {
-                Log.e("API_ERROR", "Error: ${e.message}")
-                errorMessage.value = e.localizedMessage ?: "Something went wrong"
-            }
+            fetchPosts()
         }
     }
 
+    private suspend fun fetchPosts() {
+        Log.e("post-data", "fetchPosts: ${currentPage}")
+        try {
+            _isLoading.value = true
+
+            val postList = fetchPostsFromApi(currentPage, pageSize)
+
+            if (postList.isNotEmpty()) {
+                processNewPosts(postList)
+            } else {
+                isLastPage = true // Stop fetching if no more data
+            }
+
+            _errorMessage.value = null
+        } catch (e: Exception) {
+            handleApiError(e)
+        } finally {
+            _isLoading.value = false
+        }
+    }
+
+    private suspend fun fetchPostsFromApi(page: Int, pageSize: Int): List<BlogPost> {
+        return BlogApi.instance.getPosts(page = page, perPage = pageSize)
+    }
+
+    private fun processNewPosts(postList: List<BlogPost>) {
+        val newPostList = postList.map { mapBlogPostToPost(it) }
+
+        _posts.value = _posts.value + newPostList // Append new posts
+        Log.e("post-data", "processNewPosts: ${currentPage}")
+        currentPage++ // Move to the next page
+    }
+
+    private fun handleApiError(e: Exception) {
+        _errorMessage.value = e.localizedMessage ?: "Something went wrong"
+    }
 }
