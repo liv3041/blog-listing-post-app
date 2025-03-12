@@ -4,6 +4,7 @@ import RespCacheObject
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
@@ -316,13 +317,12 @@ fun NavGraph(startDestination: String = "home") {
     }
 }
 
+
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun WebViewScreen(url: String, navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
-    val webViewState = rememberWebViewState(url)
     val webViewNavigator = rememberWebViewNavigator()
-
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -336,14 +336,18 @@ private fun WebViewScreen(url: String, navController: NavController) {
                             super.onPageFinished(view, url)
                             isLoading = false
                         }
+
+                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                            super.onPageStarted(view, url, favicon)
+                            isLoading = true
+                        }
                     }
                     loadUrl(url)
                 }
             }
-
         )
 
-        if (webViewState.isLoading) {
+        if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
