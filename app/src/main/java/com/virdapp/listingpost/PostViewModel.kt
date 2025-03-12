@@ -11,8 +11,10 @@ import com.virdapp.listingpost.data.Post
 import com.virdapp.listingpost.data.Rendered
 import com.virdapp.listingpost.data.mapBlogPostToPost
 import com.virdapp.listingpost.remote.BlogApi
+import com.virdapp.listingpost.remote.BlogApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +46,6 @@ class PostViewModel : ViewModel() {
     }
 
     fun getPosts() {
-        if (_isLoading.value || isLastPage) return // Prevent duplicate requests
 
         viewModelScope.launch {
             fetchPosts()
