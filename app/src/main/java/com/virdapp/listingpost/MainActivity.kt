@@ -140,7 +140,7 @@ fun PostItem(
                 .fillMaxWidth()
                 .padding(4.dp)
         ) {
-            PostAuthor(post.author,post.logo_of_author)
+            PostAuthor(post.authorDetails.author,post.authorDetails.avatar)
         }
         Row(
             modifier = Modifier
@@ -207,14 +207,15 @@ fun TextAndImages(text:String,@DrawableRes image: Int,modifier: Modifier = Modif
 
 
 @Composable
-fun PostAuthor(author: String, @DrawableRes logoOfAuthor: Int) {
+fun PostAuthor(author: String, logoOfAuthor:String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
     ) {
         Spacer(modifier = Modifier.padding(8.dp))
-        Image(
-            painter = painterResource(logoOfAuthor),
+        Log.e("MAIN_ACT", "PostAuthor: ${logoOfAuthor}")
+        AsyncImage(
+            model = logoOfAuthor,
             contentDescription = null,
             modifier = Modifier
                 .size(34.dp)

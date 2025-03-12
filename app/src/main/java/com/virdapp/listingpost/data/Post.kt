@@ -1,7 +1,18 @@
 package com.virdapp.listingpost.data
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import com.virdapp.listingpost.R
+import com.virdapp.listingpost.remote.BlogApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+public final data  class AuthorDetails (
+    var author: String = "",
+    var avatar: String = ""
+)
 
 data class Post(
 
@@ -9,37 +20,40 @@ data class Post(
     val description: String,
     @DrawableRes val image: Int,
     val views: Int,
-    val author:String,
-   @DrawableRes val logo_of_author:Int,
+    private var author:String = "",
+    private var logo_of_author: String = "",
     val likes_no: Int,
     val comments:Int,
     val blogPost: BlogPost,
-    val rendered: Rendered
-)
+    val rendered: Rendered,
+    var author_id: Int = 0,
+    var authorDetails: AuthorDetails
+) {
+    init {
+        fetchAuthorDetails(author_id)
+    }
+    private fun fetchAuthorDetails(authorId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = BlogApi.instance.getUser(authorId.toString())
+
+                if (response.isSuccessful) {
+                    response.body()?.let { authorData ->
+                        withContext(Dispatchers.Main) { // UI update in main thread
+                            author = authorData.name
+                            logo_of_author = authorData.avatar_urls.`48`
+                            authorDetails = AuthorDetails(author, logo_of_author)
+                            Log.e("post-data-1", "fetchAuthorDetails: Author = $author, Logo = $logo_of_author")
+                        }
+                    }
+                } else {
+                    Log.e("post-data-1", "API Response Failed: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("post-data-1", "API Call Failed: ${e.message}")
+            }
+        }
+    }
 
 
-//
-//val news_post = listOf(
-//    Post(
-//        "First Post",
-//        "This first post is generated to test the dummy application .",
-//        R.drawable.image1,
-//        200,
-//        "Woof App",
-//        R.drawable.ic_woof_logo,
-//        99,
-//        10,
-//
-//    ),
-//    Post(
-//            "Second Post",
-//    "This second post is generated to test the dummy application which the listing page app assignment given by vird company.",
-//    R.drawable.image1,
-//    1000,
-//    "Woof App",
-//    R.drawable.ic_woof_logo,
-//    990,
-//    900
-//)
-//)
-
+}

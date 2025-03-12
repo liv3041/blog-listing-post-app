@@ -79,7 +79,6 @@ class PostViewModel : ViewModel() {
 
     private fun processNewPosts(postList: List<BlogPost>) {
         val newPostList = postList.map { mapBlogPostToPost(it) }
-
         _posts.value = _posts.value + newPostList // Append new posts
         Log.e("post-data", "processNewPosts: ${currentPage}")
         currentPage++ // Move to the next page
