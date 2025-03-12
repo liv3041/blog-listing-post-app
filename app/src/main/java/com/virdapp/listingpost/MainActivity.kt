@@ -2,6 +2,8 @@ package com.virdapp.listingpost
 
 import RespCacheObject
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
@@ -28,8 +30,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat.startActivity
 import com.virdapp.listingpost.data.Post
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -161,12 +170,38 @@ fun PostItem(
         ) {
 
 
-            PostAnalytics(post.likes_no,post.comments)
+//            PostAnalytics(post.likes_no,post.comments)
+            PostShareBtn(LocalContext.current,post.shareLink)
         }
 
     }
 }
 
+
+@Composable
+private fun PostShareBtn(context: Context,text: String) {
+    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+
+
+    Button(onClick = {
+        startActivity(context, shareIntent, null)
+
+
+    },
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        modifier = Modifier.fillMaxWidth()
+            .background(Color.Transparent, shape = RoundedCornerShape(12.dp)),
+
+    ) {
+        Icon(imageVector = Icons.Default.Share, contentDescription = null)
+        Text("Share", modifier = Modifier.padding(start = 8.dp))
+    }
+}
+//Not in use
 @Composable
 fun PostAnalytics(likesNo: Int, comments: Int,modifier: Modifier = Modifier) {
         Row(

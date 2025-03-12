@@ -27,7 +27,8 @@ data class Post(
     val blogPost: BlogPost,
     val rendered: Rendered,
     var author_id: Int = 0,
-    var authorDetails: AuthorDetails
+    var authorDetails: AuthorDetails,
+    var shareLink: String
 ) {
     init {
         fetchAuthorDetails(author_id)

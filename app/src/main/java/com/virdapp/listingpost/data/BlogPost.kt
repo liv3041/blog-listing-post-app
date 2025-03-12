@@ -14,7 +14,8 @@ data class BlogPost(
     @SerializedName("excerpt") val excerpt: Excerpt,
     @SerializedName("jetpack_featured_media_url") val featuredMediaUrl: String,
     @SerializedName("link") val link: String,
-    val author: Int
+    val author: Int,
+    @SerializedName("jetpack_shortlink") val shareLink: String
 
 )
 data class Title(
@@ -45,7 +46,8 @@ fun mapBlogPostToPost(blogPost: BlogPost): Post {
         blogPost = blogPost,  // Direct reference
         rendered = Rendered(blogPost.title.rendered),
         author_id = blogPost.author,
-        authorDetails = AuthorDetails()
+        authorDetails = AuthorDetails(),
+        shareLink = blogPost.shareLink
     )
     return post
 }
