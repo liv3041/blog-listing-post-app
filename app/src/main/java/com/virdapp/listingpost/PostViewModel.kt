@@ -83,9 +83,13 @@ class PostViewModel : ViewModel() {
         _posts.value = _posts.value + newPostList // Append new posts
         Log.e("post-data", "processNewPosts: ${currentPage}")
         currentPage++ // Move to the next page
+        Log.e("post-data", "processNewPosts: ${currentPage}")
     }
 
     private fun handleApiError(e: Exception) {
         _errorMessage.value = e.localizedMessage ?: "Something went wrong"
     }
+
+
 }
+

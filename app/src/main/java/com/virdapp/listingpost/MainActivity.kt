@@ -1,5 +1,6 @@
 package com.virdapp.listingpost
 
+import RespCacheObject
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
@@ -58,6 +59,9 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.google.accompanist.web.rememberWebViewNavigator
 import com.google.accompanist.web.rememberWebViewState
+import com.virdapp.listingpost.cache.PostCacheViewModel
+import com.virdapp.listingpost.cache.PostRepository
+import com.virdapp.listingpost.remote.BlogApi
 
 
 import com.virdapp.listingpost.ui.theme.ListingpostTheme
@@ -68,8 +72,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        RespCacheObject.setContext(this)
         navController = NavController(this)
         enableEdgeToEdge()
+
+
         setContent {
             ListingpostTheme {
                 BlogListingApp(
@@ -101,9 +108,7 @@ fun BlogListingApp(navController: NavController){
             }
     }
 
-    Scaffold(
-
-    ) { it ->
+    Scaffold { it ->
         LazyColumn(state = listState, contentPadding = it) {
             print(it)
             items(posts){
@@ -190,6 +195,7 @@ fun TextAndImages(text:String,@DrawableRes image: Int,modifier: Modifier = Modif
             contentDescription = null,
             modifier = Modifier.size(16.dp)
         )
+        Spacer(modifier = Modifier.padding(4.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall
@@ -210,7 +216,9 @@ fun PostAuthor(author: String, @DrawableRes logoOfAuthor: Int) {
         Image(
             painter = painterResource(logoOfAuthor),
             contentDescription = null,
-            modifier = Modifier.size(34.dp).padding(end = 16.dp),
+            modifier = Modifier
+                .size(34.dp)
+                .padding(end = 16.dp),
         )
         Text(text = author,
             style = MaterialTheme.typography.labelSmall)
@@ -224,7 +232,7 @@ fun PostIcon(
     AsyncImage(
         modifier = modifier
             .size(100.dp)
-        .padding(8.dp)
+            .padding(8.dp)
             .clip(MaterialTheme.shapes.small),
         model = image,
         contentScale = ContentScale.Crop,
