@@ -33,7 +33,7 @@ fun mapBlogPostToPost(blogPost: BlogPost): Post {
     var post = Post(
         title = blogPost.title.rendered,
         description = blogPost.excerpt.rendered,
-        image = R.drawable.image1,
+        image = R.drawable.image1__placeholderpng,
         views = 0,
         author = "",
         logo_of_author = "",
