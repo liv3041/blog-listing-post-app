@@ -1,30 +1,23 @@
 package com.virdapp.listingpost
 
+
 import RespCacheObject
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,7 +30,6 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -45,9 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,24 +45,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat.startActivity
-import com.virdapp.listingpost.data.Post
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.google.accompanist.web.rememberWebViewNavigator
-import com.google.accompanist.web.rememberWebViewState
-import com.virdapp.listingpost.cache.PostCacheViewModel
-import com.virdapp.listingpost.cache.PostRepository
-import com.virdapp.listingpost.remote.BlogApi
-
-
+import com.virdapp.listingpost.data.Post
 import com.virdapp.listingpost.ui.theme.ListingpostTheme
 
 class MainActivity : ComponentActivity() {
@@ -140,7 +120,7 @@ fun PostItem(
 ){
     Card(modifier = modifier
         .clickable {
-            val encodedUrl = Uri.encode(post.blogPost.link)
+            val encodedUrl = Uri.encode(post.link)
             val encodedTitle = Uri.encode(post.title)
             navController.navigate("webview/${encodedUrl}/${encodedTitle}")
         },
@@ -159,8 +139,8 @@ fun PostItem(
                 .padding(8.dp)
         ) {
 
-            PostIcon(post.blogPost.featuredMediaUrl)
-            PostInformation(post.blogPost.title.rendered,post.description)
+            PostIcon(post.featuredMediaUrl)
+            PostInformation(post.title,post.description)
 
 
 

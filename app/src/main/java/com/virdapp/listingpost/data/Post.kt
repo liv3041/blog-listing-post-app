@@ -2,6 +2,7 @@ package com.virdapp.listingpost.data
 
 import android.util.Log
 import androidx.annotation.DrawableRes
+import com.google.gson.annotations.SerializedName
 import com.virdapp.listingpost.R
 import com.virdapp.listingpost.remote.BlogApi
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +29,9 @@ data class Post(
     val rendered: Rendered,
     var author_id: Int = 0,
     var authorDetails: AuthorDetails,
-    var shareLink: String
+    var shareLink: String,
+    val featuredMediaUrl: String,
+    val link: String,
 ) {
     init {
         fetchAuthorDetails(author_id)

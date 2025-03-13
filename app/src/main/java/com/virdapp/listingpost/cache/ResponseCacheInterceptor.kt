@@ -46,26 +46,22 @@ class ResponseCacheInterceptor (
 
         return if (cachedResponse != null && isCacheValid(cachedResponse.timestamp))  {
             Log.d("ResponseCacheInterceptor", "picked cached - request: ${cacheKey} response: ${cachedResponse.response}")
-            // Use the cached response if it exists
             val cache = cachedResponse.response as String
             val responseBody: ResponseBody = ResponseBody.create("application/json".toMediaTypeOrNull(), cache)
             Response.Builder()
                 .request(request)
-                .code(200) // OK status code
+                .code(200)
                 .protocol(chain.connection()?.protocol() ?: okhttp3.Protocol.HTTP_1_1)
                 .message("OK")
-                .body(responseBody) // Use the cached body
+                .body(responseBody)
                 .build()
 
         } else {
             // Proceed with network request and cache the response asynchronously
             val networkResponse = chain.proceed(request)
             Log.d("ResponseCacheInterceptor", "request: ${cacheKey} call api: ${networkResponse.body}")
-            // Make sure we consume the response body once before caching
             val responseString = networkResponse.body?.string() ?: ""
-            // Cache the response body after it has been consumed
             cacheResponse(cacheKey, responseString)
-            // Rebuild the response with the body read from the network
             return networkResponse.newBuilder()
                 .body(ResponseBody.create(networkResponse.body?.contentType(), responseString))
                 .build()

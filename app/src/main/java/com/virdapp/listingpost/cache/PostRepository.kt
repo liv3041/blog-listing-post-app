@@ -16,11 +16,11 @@ class PostRepository(context: Context) {
             val currentTime = System.currentTimeMillis()
 
             if (cachedData != null && (currentTime - cachedData.timestamp) < cacheExpiry) {
-                return@withContext cachedData.response // Return cached response
+                return@withContext cachedData.response
             }
 
-            val response = fetchFromNetwork(url) // Fetch from API
-            cacheDao.insertCache(UrlCache(url, response, currentTime)) // Save in cache
+            val response = fetchFromNetwork(url)
+            cacheDao.insertCache(UrlCache(url, response, currentTime))
             response
         }
     }
