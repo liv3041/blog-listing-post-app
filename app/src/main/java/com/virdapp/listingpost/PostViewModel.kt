@@ -6,9 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.virdapp.listingpost.data.BlogPost
 import com.virdapp.listingpost.data.Post
+import com.virdapp.listingpost.data.author_data.AuthorDetails
 import com.virdapp.listingpost.data.mapBlogPostToPost
 import com.virdapp.listingpost.remote.BlogApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PostViewModel : ViewModel() {
 
@@ -30,6 +34,11 @@ class PostViewModel : ViewModel() {
     var currentPage = 1
     private val pageSize = 10
     private var isLastPage = false
+    private val post:Post
+        get() {
+            TODO()
+        }
+
 
     init {
         getPosts()
@@ -40,6 +49,8 @@ class PostViewModel : ViewModel() {
         viewModelScope.launch {
             fetchPosts()
         }
+
+        fetchAuthorDetails(post.author_id)
     }
 
     private suspend fun fetchPosts() {
@@ -77,6 +88,36 @@ class PostViewModel : ViewModel() {
 
     private fun handleApiError(e: Exception) {
         _errorMessage.value = e.localizedMessage ?: "Something went wrong"
+    }
+
+
+    private fun fetchAuthorDetails(authorId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = BlogApi.instance.getUser(authorId.toString())
+//                Log.e("REsponse:", "fetchAuthorDetails:$response ")
+                if (response.isSuccessful) {
+                    response.body()?.let { authorData ->
+//                        withContext(Dispatchers.Main) {
+//                         authorData.map { author ->
+//                                AuthorDetails(author.name, author.avatar_urls.`24`)
+//                            }
+
+                            var author = post.author
+                            var logo_of_author = post.logo_of_author
+                            author = authorData.name
+                            logo_of_author = authorData.avatar_urls.`24`
+                            post.authorDetails = listOf(AuthorDetails(author, logo_of_author,))
+                            Log.e("post-data-1", "fetchAuthorDetails: Author = ${author}, Logo = ${logo_of_author}")
+//                        }
+                    }
+                } else {
+                    Log.e("post-data-1", "API Response Failed: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("post-data-1", "API Call Failed: ${e.message}")
+            }
+        }
     }
 
 

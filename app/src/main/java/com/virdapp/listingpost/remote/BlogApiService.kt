@@ -1,5 +1,6 @@
 package com.virdapp.listingpost.remote
 
+
 import com.virdapp.listingpost.data.BlogPost
 import com.virdapp.listingpost.data.Post
 import com.virdapp.listingpost.data.author_data.Author

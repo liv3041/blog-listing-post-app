@@ -54,16 +54,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.virdapp.listingpost.data.Post
+import com.virdapp.listingpost.data.author_data.AuthorDetails
 import com.virdapp.listingpost.ui.theme.ListingpostTheme
 
 class MainActivity : ComponentActivity() {
-    var navController: NavController? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         RespCacheObject.setContext(this)
-        navController = NavController(this)
+
         enableEdgeToEdge()
 
 
@@ -94,6 +95,8 @@ fun BlogListingApp(navController: NavController){
                 if (lastIndex != null && lastIndex >= posts.size - 3) { // Load more when 3 items from the end
                     Log.e("post-data", "BlogListingApp: ${lastIndex}  ${viewModel.currentPage}")
                     viewModel.getPosts()
+                }else{
+                    Log.e("post-data","BlogListingApp:$errorMessage")
                 }
             }
     }
@@ -131,7 +134,16 @@ fun PostItem(
                 .fillMaxWidth()
                 .padding(4.dp)
         ) {
-            PostAuthor(post.authorDetails.author,post.authorDetails.avatar)
+
+            PostAuthor(post.author,post.logo_of_author)
+
+
+
+
+
+
+//            } ?: Log.e("Error", "No author details found")
+
         }
         Row(
             modifier = Modifier

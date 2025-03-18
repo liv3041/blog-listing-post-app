@@ -2,6 +2,7 @@ package com.virdapp.listingpost.data
 
 import com.google.gson.annotations.SerializedName
 import com.virdapp.listingpost.R
+import com.virdapp.listingpost.data.author_data.AuthorDetails
 
 data class BlogPost(
     val id: Int,
@@ -42,7 +43,7 @@ fun mapBlogPostToPost(blogPost: BlogPost): Post {
         blogPost = blogPost,
         rendered = Rendered(blogPost.title.rendered),
         author_id = blogPost.author,
-        authorDetails = AuthorDetails(),
+        authorDetails = listOf(AuthorDetails()) ,
         shareLink = blogPost.shareLink,
         featuredMediaUrl = blogPost.featuredMediaUrl,
         link = blogPost.link
