@@ -135,8 +135,10 @@ fun PostItem(
                 .padding(4.dp)
         ) {
 
-            PostAuthor(post.author,post.logo_of_author)
-
+            PostAuthor(
+                author = post.authorDetails.firstOrNull()?.author ?: "Unknown Author",
+                logoOfAuthor = post.logo_of_author.takeIf { it.isNotEmpty() } ?: "default_logo_url"
+            )
 
 
 
