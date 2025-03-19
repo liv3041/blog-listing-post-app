@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.virdapp.listingpost.cache.PostRepository
 import com.virdapp.listingpost.data.BlogPost
 import com.virdapp.listingpost.data.Post
 import com.virdapp.listingpost.data.author_data.AuthorDetails
@@ -17,8 +18,6 @@ import kotlinx.coroutines.withContext
 class PostViewModel : ViewModel() {
 
     // Holds the list of fetched posts
-    var data = mutableStateOf<List<Post>>(emptyList())
-
     private val _posts = mutableStateOf<List<Post>>(emptyList())
     val posts = _posts
 
@@ -34,15 +33,14 @@ class PostViewModel : ViewModel() {
     var currentPage = 1
     private val pageSize = 10
     private var isLastPage = false
-    private val post:Post
-        get() {
-            TODO()
-        }
+
 
 
     init {
+//        Log.e("FetchAuthorDetails", "AuthorId:${post.author_id}: ", )
+
         getPosts()
-//        fetchAuthorDetails(post.author_id)
+
     }
 
     fun getPosts() {
@@ -81,45 +79,44 @@ class PostViewModel : ViewModel() {
 
     private fun processNewPosts(postList: List<BlogPost>) {
         val newPostList = postList.map { mapBlogPostToPost(it) }
-        _posts.value = _posts.value + newPostList // Append new posts
-        Log.e("post-data", "processNewPosts: ${currentPage}")
-        currentPage++ // Move to the next page
-        Log.e("post-data", "processNewPosts: ${currentPage}")
+        _posts.value = _posts.value + newPostList
+
+        newPostList.forEach { post ->
+            fetchAuthorDetails(post)
+        }
+
+        currentPage++
     }
+
 
     private fun handleApiError(e: Exception) {
         _errorMessage.value = e.localizedMessage ?: "Something went wrong"
     }
 
 
-//    private fun fetchAuthorDetails(authorId: Int) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            try {
-//                val response = BlogApi.instance.getUser(authorId.toString())
-////                Log.e("REsponse:", "fetchAuthorDetails:$response ")
-//                if (response.isSuccessful) {
-//                    response.body()?.let { authorData ->
-////                        withContext(Dispatchers.Main) {
-////                         authorData.map { author ->
-////                                AuthorDetails(author.name, author.avatar_urls.`24`)
-////                            }
-//
-//                            var author = post.author
-//                            var logo_of_author = post.logo_of_author
-//                            author = authorData.name
-//                            logo_of_author = authorData.avatar_urls.`24`
-//                            post.authorDetails = listOf(AuthorDetails(author, logo_of_author,))
-//                            Log.e("post-data-1", "fetchAuthorDetails: Author = ${author}, Logo = ${logo_of_author}")
-////                        }
-//                    }
-//                } else {
-//                    Log.e("post-data-1", "API Response Failed: ${response.code()} - ${response.message()}")
-//                }
-//            } catch (e: Exception) {
-//                Log.e("post-data-1", "API Call Failed: ${e.message}")
-//            }
-//        }
-//    }
+    private fun fetchAuthorDetails(post: Post) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = BlogApi.instance.getUser(post.author_id.toString())
+                Log.e("post-data-1", "AuthorId:${post.author_id}: ", )
+                if (response.isSuccessful) {
+                    response.body()?.let { authorData ->
+                        withContext(Dispatchers.Main) {
+                            post.authorDetails = listOf(
+                                AuthorDetails(authorData.name, authorData.avatar_urls.`24`)
+                            )
+                            Log.e("post-data-1", "Author: ${authorData.name}, Logo: ${authorData.avatar_urls.`24`}")
+                        }
+                    }
+                } else {
+                    Log.e("post-data-1", "API Response Failed: ${response.code()} - ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("post-data-1", "API Call Failed: ${e.message}")
+            }
+        }
+    }
+
 
 
 }

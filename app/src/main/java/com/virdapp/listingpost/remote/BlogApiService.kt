@@ -20,7 +20,7 @@ interface BlogApiService {
         @Query("page") page: Int = 1
     ): List<BlogPost>
 
-//    @GET("wp-json/wp/v2/users/{id}")
-//    suspend fun getUser(@Path("id") userId: String): Response<Author>
+    @GET("wp-json/wp/v2/users/{id}")
+    suspend fun getUser(@Path("id") userId: String): Response<Author>
 
 }

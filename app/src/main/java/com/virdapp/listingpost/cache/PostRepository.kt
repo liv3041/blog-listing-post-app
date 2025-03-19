@@ -30,4 +30,6 @@ class PostRepository(context: Context) {
         val connection = url.openConnection() as HttpURLConnection
         return connection.inputStream.bufferedReader().use { it.readText() }
     }
+
+
 }
