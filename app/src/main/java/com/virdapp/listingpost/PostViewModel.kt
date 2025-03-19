@@ -42,6 +42,7 @@ class PostViewModel : ViewModel() {
 
     init {
         getPosts()
+//        fetchAuthorDetails(post.author_id)
     }
 
     fun getPosts() {
@@ -50,7 +51,7 @@ class PostViewModel : ViewModel() {
             fetchPosts()
         }
 
-        fetchAuthorDetails(post.author_id)
+
     }
 
     private suspend fun fetchPosts() {
@@ -91,34 +92,34 @@ class PostViewModel : ViewModel() {
     }
 
 
-    private fun fetchAuthorDetails(authorId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = BlogApi.instance.getUser(authorId.toString())
-//                Log.e("REsponse:", "fetchAuthorDetails:$response ")
-                if (response.isSuccessful) {
-                    response.body()?.let { authorData ->
-//                        withContext(Dispatchers.Main) {
-//                         authorData.map { author ->
-//                                AuthorDetails(author.name, author.avatar_urls.`24`)
-//                            }
-
-                            var author = post.author
-                            var logo_of_author = post.logo_of_author
-                            author = authorData.name
-                            logo_of_author = authorData.avatar_urls.`24`
-                            post.authorDetails = listOf(AuthorDetails(author, logo_of_author,))
-                            Log.e("post-data-1", "fetchAuthorDetails: Author = ${author}, Logo = ${logo_of_author}")
-//                        }
-                    }
-                } else {
-                    Log.e("post-data-1", "API Response Failed: ${response.code()} - ${response.message()}")
-                }
-            } catch (e: Exception) {
-                Log.e("post-data-1", "API Call Failed: ${e.message}")
-            }
-        }
-    }
+//    private fun fetchAuthorDetails(authorId: Int) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            try {
+//                val response = BlogApi.instance.getUser(authorId.toString())
+////                Log.e("REsponse:", "fetchAuthorDetails:$response ")
+//                if (response.isSuccessful) {
+//                    response.body()?.let { authorData ->
+////                        withContext(Dispatchers.Main) {
+////                         authorData.map { author ->
+////                                AuthorDetails(author.name, author.avatar_urls.`24`)
+////                            }
+//
+//                            var author = post.author
+//                            var logo_of_author = post.logo_of_author
+//                            author = authorData.name
+//                            logo_of_author = authorData.avatar_urls.`24`
+//                            post.authorDetails = listOf(AuthorDetails(author, logo_of_author,))
+//                            Log.e("post-data-1", "fetchAuthorDetails: Author = ${author}, Logo = ${logo_of_author}")
+////                        }
+//                    }
+//                } else {
+//                    Log.e("post-data-1", "API Response Failed: ${response.code()} - ${response.message()}")
+//                }
+//            } catch (e: Exception) {
+//                Log.e("post-data-1", "API Call Failed: ${e.message}")
+//            }
+//        }
+//    }
 
 
 }
